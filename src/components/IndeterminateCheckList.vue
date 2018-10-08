@@ -1,6 +1,6 @@
 <template>
   <div class="IndeterminateCheckList">
-    <div class="" v-for="item in list">
+    <div class="" v-for="(item, i) in list" :key="i">
       <mt-checklist
         class="mainList"
         v-model="checkedItem"

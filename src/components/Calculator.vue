@@ -6,10 +6,12 @@
 .record-container {
   border: 1px solid #dcdfe6;
   margin: 8px 4px;
-  min-height: 200px;
+  // min-height: 200px;
   border-radius: 4px;
   padding: 4px;
   color: #555;
+  height: 100px;
+  overflow: auto;
   .empty {
     line-height: 200px;
   }
@@ -18,6 +20,11 @@
     padding: 0 4px;
     line-height: 28px;
     font-size: 14px;
+    .que, .ans {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
   }
 }
 .calculator-container {
@@ -50,24 +57,24 @@
   <div class="">
     <div class="mode-choise">
       <el-radio v-model="mode" label="basic" border>基础模式</el-radio>
-      <el-radio v-model="mode" label="Advanced" border>高级模式</el-radio>
+      <el-radio v-model="mode" label="advanced" border>高级模式</el-radio>
     </div>
     <el-row :gutter='8' class="calculator-container">
       <template v-if="mode !== 'basic'">
-        <div class="record-container">
+        <div class="record-container" id='record-box'>
           <template v-if="!records.length">
             <p class="empty">暂无记录</p>
           </template>
           <template v-else>
             <el-row v-for='(r, i) in records' :key='i' class="record">
-              <el-col style="text-align:left" span='12'>{{r.q}}</el-col>
-              <el-col span='2'>=</el-col>
-              <el-col style="text-align:right" span='10'>{{r.a}}</el-col>
+              <el-col class="que" style="text-align:left" :span='13'>{{r.que}}</el-col>
+              <el-col :span='1'>=</el-col>
+              <el-col class="ans" style="text-align:right" :span='10'>{{r.ans}}</el-col>
             </el-row>
           </template>
         </div>
       </template>
-      <el-input v-model="inputText" :readonly="mode === 'basic'"></el-input>
+      <el-input v-model="inputText" :readonly="mode === 'basic'" :placeholder="mode === 'basic' ? '' : '请输入'"></el-input>
       <el-col :span="colSpan(btn)" v-for='btn in buttonMaps' :key='btn'>
         <el-button :disabled="btn === '=' && !inputText.length" @click='clickBtn(btn)' :type="btn === '=' ? 'primary' : ''">{{btn}}</el-button>
       </el-col>
@@ -77,6 +84,7 @@
 
 <script>
 import { buttonMaps } from '../utils/constants'
+import { isEqual } from 'lodash'
 const ERR_TEXT = 'Error'
 export default {
   name: 'Calculator',
@@ -89,7 +97,7 @@ export default {
       buttonMaps,
       inputText: '',
       result: false,
-      records: [{q: '21313',a: '232'}],
+      records: [{que: '21313',ans: '232'}],
 
     }
   },
@@ -188,7 +196,19 @@ export default {
           this.calculate(_ipt)
         }
       } else {
+        var que = this.inputText
         this.inputText = eval(String(_ipt))+'';
+        let new_r = { que, ans: this.inputText }
+        if(this.mode === 'advanced' && !isEqual(new_r, this.records[this.records.length-1])) {
+          let _records = [...this.records]
+          _records.push(new_r)
+          this.records = _records
+          this.$nextTick(function () {
+             // 将回调延迟到下次 DOM 更新循环之后执行
+            var div = document.getElementById('record-box')
+            div.scrollTop = div.scrollHeight
+          })
+        }
       }
     }
   }
