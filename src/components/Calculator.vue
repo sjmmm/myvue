@@ -40,8 +40,6 @@
     margin-bottom: 4px;
     line-height: 40px;
     height: 40px;
-    .el-input__inner {
-    }
   }
   .el-col {
     margin: 4px 0;
@@ -74,7 +72,7 @@
           </template>
         </div>
       </template>
-      <el-input v-model="inputText" :readonly="mode === 'basic'" :placeholder="mode === 'basic' ? '' : '请输入'"></el-input>
+      <el-input v-model="inputText" :readonly="mode === 'basic'" :placeholder="mode === 'basic' ? '' : '请输入'" @keyup.enter.native="clickBtn('=')"></el-input>
       <el-col :span="colSpan(btn)" v-for='btn in buttonMaps' :key='btn'>
         <el-button :disabled="btn === '=' && !inputText.length" @click='clickBtn(btn)' :type="btn === '=' ? 'primary' : ''">{{btn}}</el-button>
       </el-col>

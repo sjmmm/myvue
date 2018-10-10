@@ -97,9 +97,6 @@ export default {
 
 <style lang='less'>
 .IndeterminateCheckList {
-  .mainList {
-
-  }
   .subList {
     margin-left: 40px;
   }

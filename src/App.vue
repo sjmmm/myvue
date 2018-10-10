@@ -29,13 +29,20 @@ export default {
   data() {
     return {
       menus,
-      activeMenu: 'calculator'
     }
   },
   beforeCreate: function() {
-    if(/calculator/.test(this.$route.path)) {
-      this.activeMenu = 'calculator'
-    }
+  },
+  computed: {
+    activeMenu: {
+      get: function () {
+        return this.$store.state.common.activeMenu
+      },
+      set: function (val) {
+        this.$store.commit('common/save', { activeMenu: val })
+      }
+    },
+
   },
   // watch: {
   //   $route(to, from) {
@@ -60,13 +67,18 @@ export default {
 a {
   text-decoration: none;
 }
+.el-container {
+  height: 100vh;
+}
 .el-menu-item {
   a {
     display: block;
   }
 }
 .el-main {
-  min-height: calc(~'100vh - 120px')
+  min-height: calc(~'100vh - 120px');
+  overflow: auto;
+  background: #fafafa;
 }
 .el-footer {
   text-align: center;

@@ -6,6 +6,9 @@ import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
 import '../theme/index.css'
 import Calculator from './components/Calculator.vue'
+import { debug } from './utils/constants'
+import common from './modules/common'
+
 import {
   Button,
   Menu,
@@ -17,7 +20,8 @@ import {
   Radio,
   Row,
   Col,
-  Input
+  Input,
+  Card
 } from 'element-ui';
 
 Vue.use(VueRouter)
@@ -34,6 +38,7 @@ Vue.use(Radio);
 Vue.use(Row);
 Vue.use(Col);
 Vue.use(Input);
+Vue.use(Card);
 
 // 设置语言
 locale.use(lang.zhCN)
@@ -42,27 +47,48 @@ locale.use(lang.zhCN)
 
 Vue.config.productionTip = false
 
-
 const router = new VueRouter({
   mode: 'history',
   routes: [
-    { path: '/', redirect: '/calculator' },
-    { path: '/calculator', component: Calculator,
-      // children: [
-      //   {
-      //     path: 'base',
-      //     component:
-      //   }
-      // ]
+    {
+      path: '/',
+      redirect: '/calculator'
     },
+    {
+      path: '/calculator',
+      name: 'calculator',
+      component: Calculator,
+    },
+    {
+      path: '/githubusers',
+      name: 'githubusers',
+      component: () => import('./components/GithubUsers')
+    }
   ]
 })
-// router.beforeEach((t,f,n) => {
-//   console.log('t,f,n',t,f,n);
-// })
+router.beforeEach((to, from, next) => {
+  if (['calculator', "githubusers"].indexOf(to.name) > -1) {
+    store.commit('common/save', { activeMenu: to.name })
+  }
+  next()
+})
+
+const store = new Vuex.Store({
+  state: {},
+  getters: {},
+  mutations: {},
+  actions: {},
+  modules: {
+    common
+  },
+  strict: debug,
+  // plugins: debug ? [createLogger()] : []
+})
+
 
 
 new Vue({
   router,
+  store,
   render: h => h(App),
 }).$mount('#app')
